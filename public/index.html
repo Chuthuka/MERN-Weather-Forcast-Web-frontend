@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyline Weather</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      content: [
+        "./src/**/*.{js,jsx,ts,tsx}",
+        "./public/index.html"
+      ],
+      theme: {
+        extend: {
+          colors: {
+            'light-blue': '#E6F3FF',
+            'medium-blue': '#4A90E2',
+            'dark-blue': '#2C3E50',
+            'yellow-accent': '#F9CE69',
+          },
+          fontFamily: {
+            'sf-pro': ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 2s infinite',
+            'spin-slow': 'spin 3s linear infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          backdropBlur: {
+            'xs': '2px',
+          },
+          scale: {
+            '102': '1.02',
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(249, 206, 105, 0.3)',
+            'glow-lg': '0 0 50px rgba(249, 206, 105, 0.4)',
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+          },
+        },
+      },
+      plugins: [],
+    }
+  </script>
+  <link rel="stylesheet" href="./App.css" />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import React from 'https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js';
+    import ReactDOM from 'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js';
+    import App from './src/App.js';
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
