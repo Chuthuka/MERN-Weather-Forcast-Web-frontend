@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {
-  Cloud, Sun, CloudRain, Wind, Eye, Droplets, Thermometer,
+import { 
+  Cloud, Sun, CloudRain, Wind, Eye, Droplets, Thermometer, 
   MapPin, Clock, Star, CloudSnow, Sunrise, Sunset, Gauge,
-  ArrowUp, ArrowDown, Activity, Share2, Loader2, Calendar
+  ArrowUp, ArrowDown, Activity, Share2, Loader2, Calendar 
 } from 'lucide-react';
 
 const WeatherCard = ({ weather, setViewMode, setForecast }) => {
@@ -14,10 +14,10 @@ const WeatherCard = ({ weather, setViewMode, setForecast }) => {
 
   const { name, main, weather: conditions, wind, visibility, sys, coord } = weather;
   const condition = conditions[0].main.toLowerCase();
-  const time = new Date().toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
+  const time = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
   });
 
   const getWeatherIcon = (condition, size = 56) => {
@@ -29,8 +29,7 @@ const WeatherCard = ({ weather, setViewMode, setForecast }) => {
       case 'snow': return <CloudSnow className="text-blue-200" {...iconProps} />;
       case 'thunderstorm': return <CloudRain className="text-purple-600" {...iconProps} />;
       case 'drizzle': return <CloudRain className="text-blue-400" {...iconProps} />;
-      case 'mist':
-      case 'fog': return <Cloud className="text-gray-400" {...iconProps} />;
+      case 'mist': case 'fog': return <Cloud className="text-gray-400" {...iconProps} />;
       default: return <Sun className="text-yellow-500" {...iconProps} />;
     }
   };
@@ -72,113 +71,244 @@ const WeatherCard = ({ weather, setViewMode, setForecast }) => {
     }
   };
 
-  const fetchForecast = async () => {
+  // New function to fetch 7-day forecast
+  const handle7DayForecast = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/forecast/${coord.lat}/${coord.lon}`);
+      const { lat, lon } = coord;
+      const response = await axios.get(`http://localhost:5000/api/forecast/${lat}/${lon}`);
       setForecast(response.data);
       setViewMode('forecast');
     } catch (error) {
-      console.error('Error fetching forecast:', error);
-      alert('Failed to fetch 7-day forecast.');
+      console.error('Error fetching 7-day forecast:', error);
+      alert('Failed to fetch 7-day forecast. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleWeatherMaps = () => {
+    alert('Weather Maps button clicked! This feature is not yet implemented.');
+  };
+
   return (
-    <div
-      className={`relative z-20 w-full max-w-2xl mt-8 glass-strong rounded-3xl p-6 sm:p-8 shadow-2xl transition-all duration-700 ease-in-out hover-lift hover:scale-102 ${isExpanded ? 'scale-105' : ''}`}
-      style={{
-        background: `linear-gradient(to top right, var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to)), radial-gradient(circle, rgba(255,255,255,0.2) 1%, transparent 100%)`,
-        '--tw-gradient-from': `var(--tw-from-color)`,
-        '--tw-gradient-via': `var(--tw-via-color)`,
-        '--tw-gradient-to': `var(--tw-to-color)`,
-        '--tw-from-color': `var(--from-${getBackgroundGradient(condition).split('from-')[1].split('/')[0]})`,
-        '--tw-via-color': `var(--via-${getBackgroundGradient(condition).split('via-')[1].split('/')[0]})`,
-        '--tw-to-color': `var(--to-${getBackgroundGradient(condition).split('to-')[1].split('/')[0]})`,
-      }}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-800 tracking-tight">
-            {name}
-          </h2>
-          <p className="text-slate-500 font-medium text-lg mt-1">
-            <Clock size={16} className="inline-block mr-1" />
-            {time}
-          </p>
+    <div className="w-full max-w-5xl mx-auto mb-8">
+      {/* Main weather card */}
+      <div className={`relative glass-strong bg-gradient-to-br ${getBackgroundGradient(condition)} rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/30 overflow-hidden hover-lift`}>
+        
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white/5 blur-xl animate-float"
+              style={{
+                width: `${60 + Math.random() * 80}px`,
+                height: `${60 + Math.random() * 80}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 4}s`,
+                animationDuration: `${4 + Math.random() * 3}s`
+              }}
+            />
+          ))}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="p-3 bg-white/30 backdrop-blur-md rounded-2xl shadow-md border border-white/40">
-            {getWeatherIcon(condition)}
+
+        {/* Header */}
+        <div className="relative flex flex-col sm:flex-row sm:justify-between sm:items-start mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+              <MapPin className="text-white" size={24} />
+            </div>
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-800">
+                {name}
+              </h2>
+              <div className="flex items-center gap-3 mt-1">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Clock size={16} />
+                  <span className="font-medium">{time}</span>
+                </div>
+                <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-slate-600 font-medium">Live</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <button
+              onClick={shareWeather}
+              className="p-3 glass rounded-xl hover:bg-white/30 transition-all duration-300 hover:scale-105"
+            >
+              <Share2 className="text-slate-600" size={20} />
+            </button>
+            <div className="px-4 py-2 glass rounded-full">
+              <div className="flex items-center gap-2">
+                <Star className="text-yellow-500 animate-pulse" size={16} />
+                <span className="text-slate-700 font-bold text-sm">LIVE</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex items-center justify-between">
-        <div>
-          <span className="text-7xl sm:text-8xl font-black text-slate-900 drop-shadow-lg">
-            {Math.round(main.temp)}°
-          </span>
-          <p className="text-xl font-semibold text-slate-700 mt-1">
-            {conditions[0].description}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 text-slate-600">
-          <div className="flex items-center gap-2">
-            <ArrowUp size={16} className="text-red-500" />
-            <span className="font-semibold">{Math.round(main.temp_max)}° Max</span>
+
+        {/* Main temperature display */}
+        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 gap-6">
+          <div className="flex items-center gap-6">
+            {/* Weather icon with enhanced styling */}
+            <div className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-br from-white/20 to-white/10 rounded-full blur-xl"></div>
+              <div className="relative glass-strong p-6 rounded-3xl backdrop-blur-sm animate-float">
+                {getWeatherIcon(condition, 64)}
+              </div>
+            </div>
+            
+            {/* Temperature and description */}
+            <div>
+              <div className="flex items-baseline gap-3">
+                <span className="text-6xl sm:text-8xl font-black text-slate-800">
+                  {Math.round(main.temp)}
+                </span>
+                <div className="flex flex-col">
+                  <span className="text-3xl text-slate-600 font-bold">°C</span>
+                  <div className="flex items-center gap-2 mt-2">
+                    <ArrowUp className="text-red-500" size={16} />
+                    <span className="text-sm font-bold text-slate-700">{Math.round(main.temp_max)}°</span>
+                    <ArrowDown className="text-blue-500" size={16} />
+                    <span className="text-sm font-bold text-slate-700">{Math.round(main.temp_min)}°</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xl sm:text-2xl text-slate-700 capitalize font-bold mt-3">
+                {conditions[0].description}
+              </p>
+              <p className="text-slate-600 text-sm font-medium mt-1">
+                Feels like {Math.round(main.feels_like)}°C
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <ArrowDown size={16} className="text-blue-500" />
-            <span className="font-semibold">{Math.round(main.temp_min)}° Min</span>
+          
+          {/* Feels like temperature - moved to mobile-friendly position */}
+          <div className="lg:text-right">
+            <div className="glass rounded-2xl p-4">
+              <p className="text-sm text-slate-600 uppercase tracking-wider font-bold">Feels like</p>
+              <p className="text-4xl font-black text-slate-800">{Math.round(main.feels_like)}°C</p>
+              <div className="mt-2 flex items-center gap-2">
+                <Activity className="text-blue-500" size={16} />
+                <span className="text-xs text-slate-500 font-medium">Real feel</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="glass p-4 rounded-xl text-center shadow-md">
-          <Droplets size={24} className="text-blue-500 mx-auto mb-2" />
-          <p className="text-sm text-slate-500">Humidity</p>
-          <p className="text-lg font-bold text-slate-800">{main.humidity}%</p>
+
+        {/* Enhanced weather details grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            { 
+              icon: <Wind size={24} />, 
+              label: 'Wind Speed', 
+              value: `${Math.round((wind?.speed || 0) * 3.6)} km/h`, 
+              color: 'text-blue-500',
+              bgColor: 'from-blue-100 to-cyan-100' 
+            },
+            { 
+              icon: <Droplets size={24} />, 
+              label: 'Humidity', 
+              value: `${main.humidity}%`, 
+              color: 'text-cyan-500',
+              bgColor: 'from-cyan-100 to-blue-100' 
+            },
+            { 
+              icon: <Eye size={24} />, 
+              label: 'Visibility', 
+              value: `${Math.round((visibility || 10000) / 1000)} km`, 
+              color: 'text-green-500',
+              bgColor: 'from-green-100 to-emerald-100' 
+            },
+            { 
+              icon: <Gauge size={24} />, 
+              label: 'Pressure', 
+              value: `${main.pressure} hPa`, 
+              color: 'text-orange-500',
+              bgColor: 'from-orange-100 to-yellow-100' 
+            }
+          ].map((item, index) => (
+            <div 
+              key={index} 
+              className={`glass-strong rounded-2xl p-4 sm:p-5 hover:bg-white/30 transition-all duration-300 hover:scale-105 bg-gradient-to-br ${item.bgColor}`}
+            >
+              <div className={`${item.color} mb-3 flex items-center justify-between`}>
+                {item.icon}
+                <div className="w-2 h-2 bg-current rounded-full animate-pulse opacity-50"></div>
+              </div>
+              <p className="text-xs text-slate-600 uppercase tracking-wider font-bold mb-1">
+                {item.label}
+              </p>
+              <p className="text-xl sm:text-2xl font-black text-slate-800">{item.value}</p>
+            </div>
+          ))}
         </div>
-        <div className="glass p-4 rounded-xl text-center shadow-md">
-          <Wind size={24} className="text-sky-500 mx-auto mb-2" />
-          <p className="text-sm text-slate-500">Wind</p>
-          <p className="text-lg font-bold text-slate-800">{Math.round(wind.speed)} km/h</p>
+
+        {/* Additional details - expandable section */}
+        {sys && (
+          <div className="border-t border-white/20 pt-6">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="w-full flex items-center justify-between p-4 glass rounded-2xl hover:bg-white/30 transition-all duration-300"
+            >
+              <span className="font-bold text-slate-800">Sun Times & More Details</span>
+              <div className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                <ArrowDown className="text-slate-600" size={20} />
+              </div>
+            </button>
+            
+            {isExpanded && (
+              <div className="mt-4 grid grid-cols-2 gap-4 animate-fade-in">
+                <div className="glass-strong rounded-2xl p-4 bg-gradient-to-br from-yellow-100 to-orange-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sunrise className="text-orange-500" size={20} />
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-wider">Sunrise</span>
+                  </div>
+                  <p className="text-xl font-black text-slate-800">{formatTime(sys.sunrise)}</p>
+                </div>
+                
+                <div className="glass-strong rounded-2xl p-4 bg-gradient-to-br from-orange-100 to-red-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sunset className="text-red-500" size={20} />
+                    <span className="text-sm font-bold text-slate-700 uppercase tracking-wider">Sunset</span>
+                  </div>
+                  <p className="text-xl font-black text-slate-800">{formatTime(sys.sunset)}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={handle7DayForecast}
+            disabled={loading}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              <Calendar size={20} />
+            )}
+            <span>{loading ? 'Fetching...' : 'View 7-Day Forecast'}</span>
+          </button>
+          
+          <button
+            onClick={handleWeatherMaps}
+            className="px-8 py-4 glass-strong text-slate-700 font-bold rounded-2xl hover:bg-white/40 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-3"
+          >
+            <MapPin size={20} />
+            <span>Weather Maps</span>
+          </button>
         </div>
-        <div className="glass p-4 rounded-xl text-center shadow-md">
-          <Gauge size={24} className="text-indigo-500 mx-auto mb-2" />
-          <p className="text-sm text-slate-500">Pressure</p>
-          <p className="text-lg font-bold text-slate-800">{main.pressure} hPa</p>
-        </div>
-        <div className="glass p-4 rounded-xl text-center shadow-md">
-          <Eye size={24} className="text-gray-500 mx-auto mb-2" />
-          <p className="text-sm text-slate-500">Visibility</p>
-          <p className="text-lg font-bold text-slate-800">{visibility / 1000} km</p>
-        </div>
-      </div>
-      <div className="mt-6 flex items-center justify-between gap-4">
-        <button
-          onClick={fetchForecast}
-          disabled={loading}
-          className="flex-1 px-6 py-3 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full text-lg font-semibold shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 size={20} className="animate-spin" /> Loading...
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <Calendar size={20} /> 7-Day Forecast
-            </span>
-          )}
-        </button>
-        <button
-          onClick={shareWeather}
-          className="p-3 bg-white/20 text-slate-700 rounded-full shadow-md hover:bg-white/40 transition-colors duration-300"
-        >
-          <Share2 size={20} />
-        </button>
       </div>
     </div>
   );
