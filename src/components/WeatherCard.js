@@ -69,4 +69,5 @@ const WeatherCard = ({ weather, setViewMode, setForecast }) => {
     }
   };
 
+  
 }
