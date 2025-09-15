@@ -34,5 +34,26 @@ const Home = () => {
     };
     fetchHistory();
   }, []);
+  const handleHistoryClick = async (cityName) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/api/weather/${cityName}`);
+      setWeather(response.data);
+    } catch (error) {
+      console.error('Error fetching weather for history item:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleClearHistory = async () => {
+    try {
+      await axios.delete('http://localhost:5000/api/history');
+      setHistory([]);
+      alert('Search history cleared!');
+    } catch (error) {
+      console.error('Error clearing history:', error);
+      alert('Failed to clear history.');
+    }
+  };
 }
